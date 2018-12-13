@@ -12,9 +12,12 @@
     <name>GitHub</name>
     
     <properties>
-        <mule.extensions.maven.plugin.version>1.1.3</mule.extensions.maven.plugin.version>
+        <mule.extensions.maven.plugin.version>1.1.5</mule.extensions.maven.plugin.version>
         <mule.extensions.version>1.1.0</mule.extensions.version>
         <mule.version>4.1.0</mule.version>
+
+        <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
+        <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
     </properties>
 
     <dependencies>
@@ -46,6 +49,16 @@
                         <version>1.1.0</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>${maven.install.plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven.deploy.plugin.version}</version>
             </plugin>
         </plugins>
     </build>
