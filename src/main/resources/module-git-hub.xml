@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="GitHub"
+        prefix="git-hub"
+        namespace="http://www.mulesoft.org/schema/mule/git-hub"
+        
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+        xmlns:http="http://www.mulesoft.org/schema/mule/http"
+        
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+           
+           http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+
+    <property name="property_host" displayName="host" type="string" defaultValue="api.github.com" summary="Host for consuming API"/>
+    <property name="property_port" displayName="port" type="string" defaultValue="443" summary="Port for consuming API"/>
+    <property name="property_basePath" displayName="basePath" type="string" defaultValue="/v3" summary="Basepath for consuming API"/>
+    <property name="property_protocol" displayName="protocol" type="string" defaultValue="HTTPS" summary="Protocol for consuming API"/>
+        <property name="property_proxyConfig" displayName="Proxy Config Reference" type="string" use="OPTIONAL" summary="Proxy config reference" tab="Proxy"/>
+    
+    
+    
+
+    <http:request-config
+name="git-hub-httpreq-config" xmlns:connection="true"
+basePath="#[vars.property_basePath]">
+<http:request-connection
+host="#[vars.property_host]"
+protocol="#[vars.property_protocol]"
+port="#[vars.property_port]"
+proxyConfig="#[vars.property_proxyConfig]"
+>
+</http:request-connection>
+</http:request-config>
+
+
+
+
+    <operation name="get-issues"  >
+        <parameters>
+                                        <parameter name="q"
+                                        type="string"
+                                        use="REQUIRED"                    doc:description="The search terms.
+"/>
+                            <parameter name="sort"
+                                        type="string"
+                                        use="OPTIONAL"                    doc:description="The sort field. Can be comments, created, or updated. Default: results are sorted by best match.
+"/>
+                            <parameter name="order"
+                                        type="string"
+                                        use="OPTIONAL"                    doc:description="The sort order if sort parameter is provided. One of asc or desc. Default: desc
+"/>
+                            <parameter name="accept"
+                                        type="string"
+                                        use="REQUIRED"                    doc:description="The type of the expected response.
+"/>
+                                    <parameter name="request-streaming-mode" displayName="Request streaming mode" type="request-streaming-mode-enum" use="OPTIONAL" />
+        </parameters>
+        <body>
+                <http:request config-ref="git-hub-httpreq-config"
+              path="/search/issues"
+              method="GET"
+              requestStreamingMode='#[vars["request-streaming-mode"]]'
+>
+                <mule:error-mapping sourceType="HTTP:PARSING" targetType="GIT-HUB:PARSING" />
+            <mule:error-mapping sourceType="HTTP:TIMEOUT" targetType="GIT-HUB:TIMEOUT" />
+            <mule:error-mapping sourceType="HTTP:SECURITY" targetType="GIT-HUB:SECURITY" />
+            <mule:error-mapping sourceType="HTTP:CONNECTIVITY" targetType="GIT-HUB:CONNECTIVITY" />
+            <mule:error-mapping sourceType="HTTP:BAD_REQUEST" targetType="GIT-HUB:BAD_REQUEST" />
+            <mule:error-mapping sourceType="HTTP:UNAUTHORIZED" targetType="GIT-HUB:UNAUTHORIZED" />
+            <mule:error-mapping sourceType="HTTP:FORBIDDEN" targetType="GIT-HUB:FORBIDDEN" />
+            <mule:error-mapping sourceType="HTTP:METHOD_NOT_ALLOWED" targetType="GIT-HUB:METHOD_NOT_ALLOWED" />
+            <mule:error-mapping sourceType="HTTP:NOT_FOUND" targetType="GIT-HUB:NOT_FOUND" />
+            <mule:error-mapping sourceType="HTTP:NOT_ACCEPTABLE" targetType="GIT-HUB:NOT_ACCEPTABLE" />
+            <mule:error-mapping sourceType="HTTP:UNSUPPORTED_MEDIA_TYPE" targetType="GIT-HUB:UNSUPPORTED_MEDIA_TYPE" />
+            <mule:error-mapping sourceType="HTTP:TOO_MANY_REQUESTS" targetType="GIT-HUB:TOO_MANY_REQUESTS" />
+            <mule:error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="GIT-HUB:INTERNAL_SERVER_ERROR" />
+            <mule:error-mapping sourceType="HTTP:SERVICE_UNAVAILABLE" targetType="GIT-HUB:SERVICE_UNAVAILABLE" />
+            <mule:error-mapping sourceType="HTTP:RETRY_EXHAUSTED" targetType="GIT-HUB:RETRY_EXHAUSTED" />
+        
+            <http:headers>
+            <![CDATA[#[ { 'Accept': vars['accept'] } filterObject $ != null ]]]>
+        </http:headers>
+                    <http:query-params>
+            <![CDATA[#[ { 'q': vars['q'],'sort': vars['sort'],'order': vars['order'] } filterObject $ != null ]]]>
+        </http:query-params>
+    </http:request>
+    <mule:set-payload value="#[payload]" mimeType="application/json" />
+        </body>
+                    <output type="get-issues-response-type" />
+        
+        <errors>
+                            <error type="PARSING"/>
+                            <error type="TIMEOUT"/>
+                            <error type="SECURITY"/>
+                            <error type="CONNECTIVITY"/>
+                            <error type="BAD_REQUEST"/>
+                            <error type="UNAUTHORIZED"/>
+                            <error type="FORBIDDEN"/>
+                            <error type="METHOD_NOT_ALLOWED"/>
+                            <error type="NOT_FOUND"/>
+                            <error type="NOT_ACCEPTABLE"/>
+                            <error type="UNSUPPORTED_MEDIA_TYPE"/>
+                            <error type="TOO_MANY_REQUESTS"/>
+                            <error type="INTERNAL_SERVER_ERROR"/>
+                            <error type="SERVICE_UNAVAILABLE"/>
+                            <error type="RETRY_EXHAUSTED"/>
+                    </errors>
+    </operation>
+
+</module>
